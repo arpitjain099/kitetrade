@@ -1,0 +1,22 @@
+{
+  "name": "kite",
+  "version": "1.0.0",
+  "description": "arpit",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "assert": "^1.4.1",
+    "client-sessions": "^0.8.0",
+    "config": "^1.28.1",
+    "eslint": "^4.13.1",
+    "eslint-config-recommended": "^2.0.0",
+    "eslint-plugin-ejs": "0.0.2",
+    "mongodb": "^3.0.0-rc0",
+    "mongoose": "^4.13.7"
+  }
+}

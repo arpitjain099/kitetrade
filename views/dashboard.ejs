@@ -1,0 +1,114 @@
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+<script
+   src="https://code.jquery.com/jquery-3.1.1.min.js"
+   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+   crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+<meta charset="UTF-8">
+<title>Super Awesome</title>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<style>
+   body    { padding-top:50px; }
+</style>
+<!-- <p><%= holdings %></p> -->
+<script>
+   var userHoldingData = (<%- JSON.stringify(holdings) %>);
+   console.log(userHoldingData);
+   if(userHoldingData.statusCode == "200"){
+   console.log("success holding")   
+   }
+</script>
+<style>
+   .green {color: green}
+   .red {color: red}
+</style>
+<p><%= holdings.body.data %></p>
+<table class="ui celled table" id="userholdingstable">
+   <thead>
+      <tr>
+         <!--<th>Exchange</th>
+            <th>Close price</th>-->
+         <th>Average price</th>
+         <th>Quantity</th>
+         <th>Last Traded Price</th>
+         <th>Day change %</th>
+         <th>Trading Symbol</th>
+         <th>Net P&L %</th>
+         <th>Target P&L %</th>
+      </tr>
+   </thead>
+   <tbody>
+      <% holdings.body.data.forEach(function(stock) { %>
+      <tr>
+         <!--
+            <td>
+              <%= stock.product %>
+            </td>
+            <td>
+              <%= stock.close_price %>
+            </td>
+            -->
+         <td>
+            <%= Math.floor(stock.average_price*100)/100 %>
+         </td>
+         <td>
+            <%= stock.quantity %>
+         </td>
+         <td>
+            <%= stock.last_price %>
+         </td>
+         
+         <td>
+            <%= Math.floor(stock.day_change_percentage*100)/100 %>
+         </td>
+         <td class="tradingsym">
+            <%= stock.tradingsymbol %>
+         </td>
+         <td 
+         <%if (stock.pnl > 0) { %> class="positive" <%} %>
+         <%if (stock.pnl < 0) { %> class="negative" <% } %>
+         >
+            <%if (stock.pnl > 0) { %> <i class="icon checkmark box green"></i> <% } %>
+            <%if (stock.pnl < 0) { %> <i class="icon checkmark box red"></i> <% } %>
+            <%= Math.floor(stock.pnl*100)/(stock.average_price*stock.quantity) %>
+         </td>
+         <td>
+         Fetching data..
+         </td>
+      </tr>
+      <% }); %>
+   </tbody>
+   <tfoot>
+      <tr>
+         <th colspan="7">
+            <div class="ui right floated pagination menu">
+               <a class="icon item">
+               <i class="left chevron icon"></i>
+               </a>
+               <a class="icon item">
+               <i class="right chevron icon"></i>
+               </a>
+            </div>
+         </th>
+      </tr>
+   </tfoot>
+</table>
+
+<script>
+	$( document ).ready(function() {
+	var listofstocks = []
+	  $("#userholdingstable tr td:nth-child(3)").each(function () {
+	  listofstocks.push($(this).html().replace(/ /g,"").replace(/\n/g,""))
+	  });
+
+	  console.log(listofstocks)
+	  $.post( "http://localhost:8080/fetchlimits", {data : listofstocks})
+	  .done(function(response) {
+	    alert( "second success" );
+	  })
+	  .fail(function() {
+	    alert( "error" );
+	  });
+ 
+	});
+</script>

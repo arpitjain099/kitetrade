@@ -4,6 +4,9 @@
    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
    crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+<link href="dist/angular-tooltips.css" rel="stylesheet" type="text/css" />
+<script src="dist/angular-tooltips.js"></script>
 <meta charset="UTF-8">
 <title>Super Awesome</title>
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -11,34 +14,29 @@
    body    { padding-top:50px; }
 </style>
 <!-- <p><%= holdings %></p> -->
-<script>
-   var userHoldingData = (<%- JSON.stringify(holdings) %>);
-   console.log(userHoldingData);
-   if(userHoldingData.statusCode == "200"){
-   console.log("success holding")   
-   }
-</script>
 <style>
    .green {color: green}
    .red {color: red}
 </style>
-<p><%= holdings.body.data %></p>
+<!-- <p><%= holdings.body.data %></p> -->
+<body  ng-app="app">
 <table class="ui celled table" id="userholdingstable">
    <thead>
       <tr>
          <!--<th>Exchange</th>
             <th>Close price</th>-->
-         <th>Average price</th>
+         <th>Average price (₹)</th>
          <th>Quantity</th>
-         <th>Last Traded Price</th>
-         <th>Day change %</th>
+         <th>Last Traded Price (₹)</th>
+         <th>Day change (%)</th>
          <th>Trading Symbol</th>
-         <th>Net P&L %</th>
-         <th>Target P&L %</th>
+         <th>Net P&L (%)</th>
+         <th>Target P&L (%)</th>
       </tr>
    </thead>
    <tbody>
       <% holdings.body.data.forEach(function(stock) { %>
+      <%if (stock.quantity > 0) { %> 
       <tr>
          <!--
             <td>
@@ -68,14 +66,20 @@
          <%if (stock.pnl > 0) { %> class="positive" <%} %>
          <%if (stock.pnl < 0) { %> class="negative" <% } %>
          >
-            <%if (stock.pnl > 0) { %> <i class="icon checkmark box green"></i> <% } %>
-            <%if (stock.pnl < 0) { %> <i class="icon checkmark box red"></i> <% } %>
-            <%= Math.floor(stock.pnl*100)/(stock.average_price*stock.quantity) %>
+            <%if (stock.pnl > 0) { %> 
+            <!-- <i class="icon checkmark box green"></i> -->
+            <% } %>
+            <%if (stock.pnl < 0) { %> 
+            <!-- <i class="icon checkmark box red"></i> -->
+            <% } %>
+            <%= Math.floor((stock.pnl*10000)/(stock.average_price*(stock.quantity + stock.t1_quantity)))/100 %>
          </td>
          <td>
          Fetching data..
          </td>
       </tr>
+      <% } %>
+      
       <% }); %>
    </tbody>
    <tfoot>
@@ -93,22 +97,52 @@
       </tr>
    </tfoot>
 </table>
-
+</body>
 <script>
-	$( document ).ready(function() {
-	var listofstocks = []
-	  $("#userholdingstable tr td:nth-child(3)").each(function () {
-	  listofstocks.push($(this).html().replace(/ /g,"").replace(/\n/g,""))
-	  });
+angular.module('app', [
+  '720kb.tooltips'
+ ]);
+console.log("after angular")
 
-	  console.log(listofstocks)
-	  $.post( "http://localhost:8080/fetchlimits", {data : listofstocks})
-	  .done(function(response) {
-	    alert( "second success" );
-	  })
-	  .fail(function() {
-	    alert( "error" );
-	  });
- 
-	});
+$(document).ready(() => {
+  console.log('jquery')
+  var userHoldingData = (<%- JSON.stringify(holdings) %>);
+  console.log(userHoldingData)
+  // console.log(JSON.stringify(userHoldingData))
+  const listofstocks = []
+  const bodyUserHoldingData = []
+  for (let i = 0; i < userHoldingData.body.data.length; i++) {
+    if (userHoldingData.body.data[i].quantity > 0) {
+      listofstocks.push(userHoldingData.body.data[i].tradingsymbol)
+      bodyUserHoldingData.push(userHoldingData.body.data[i])
+    }
+  }
+
+  $.post('http://localhost:8080/fetchlimits', { listofstocks })
+    .done(backEndResponse => {
+      console.log('response recvd from backend')
+      // console.log(response)
+      const response = backEndResponse.response
+      for (let rowIndex = 0; rowIndex < response.length; rowIndex++) {
+      	const stock = bodyUserHoldingData[rowIndex]
+      	const cellElement = document.getElementById('userholdingstable').rows[rowIndex + 1].cells[6]
+      	const pnlPercent = Math.floor(stock.pnl * 10000 / (stock.average_price * (stock.quantity + stock.t1_quantity))) / 100
+        const individualResponseElem = response[rowIndex]
+        // console.log(response[rowIndex])
+        // console.log(individualResponseElem.profitPercent)
+        if (pnlPercent > individualResponseElem.profitPercent) {
+        	cellElement.classList.add('positive')
+        } else if (pnlPercent < individualResponseElem.lossPercent) {
+        	cellElement.classList.add('negative')
+        }
+        cellElement.innerHTML = JSON.stringify(response[rowIndex])
+      }
+    })
+    .fail(() => {
+      alert('error')
+    })
+})
+
 </script>
+
+<a href="#" tooltips tooltip-template-url="http://google.com">Tooltip me</a>

@@ -5,10 +5,10 @@ const api_key = 'egsewsabj082clgl'
 const api_secret = 'zr03ngqmde9m0hi19k31wu9mhh8bp94c'
 const request = require('request')
 const rp = require('request-promise-native')
+const bodyParser = require('body-parser')
 const session = require('client-sessions')
 let MongoClient = require('mongodb').MongoClient,
   assert = require('assert')
-
 app.use(express.static('public'))
 app.set('view engine', 'ejs')
 app.get('/', (req, res) => {
@@ -23,9 +23,11 @@ app.use(session({
   activeDuration: 5 * 60 * 1000,
 }))
 
+app.use(bodyParser.json()) // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 app.get('/callback', (req, res) => {
   console.log(req.query.request_token)
-  console.log(req.session)
+  //console.log(req.session)
 
   const getUserAccessToken = {
     method: 'POST',
@@ -44,8 +46,6 @@ app.get('/callback', (req, res) => {
       // console.log(response)
       // res.status(200).send(response)
       req.session.user = JSON.stringify(response)
-      console.log('\n\n\n')
-      console.log(response.body)
       res.redirect('/dashboard')
     })
     .catch(err => {
@@ -57,29 +57,62 @@ app.get('/callback', (req, res) => {
 })
 
 app.post('/fetchlimits', (req, res) => {
-  console.log('fetchlimits')
-  res.status(200).send({
-    data: [ {
-      profit: 5,
-      loss: -5
-    } ]
-  })
-})
-
-app.get('/test', (req, res) => {
+  // console.log(req.body.listofstocks)
+  const userId = JSON.parse(req.session.user).body.data.user_id
+  const listOfStocksInRequest = req.body.listofstocks
   MongoClient.connect('mongodb://localhost', (err, client) => {
     if (err) {
       throw err
     }
     const db = client.db('kitetrade')
-    db.collection('userPreferences').find({}, (findErr, result) => {
-      if (findErr) {
-        throw findErr
-      }
-      console.log(result)
-      res.status(200).send({ result })
+    const userPreferences = db.collection('userPreferences')
+    const currentStocksInDatabase = []
+    userPreferences.find({ user: userId }).toArray((err, result) => {
+    	// console.log(result)
+    	// console.log(result.length)
+    	// console.log(result[0].preferences[0])
 
-      client.close()
+    	if (result.length == 1) {
+    		for (var i = 0; i < result[0].preferences.length; i++) {
+    			currentStocksInDatabase.push(result[0].preferences[i].stock)
+    		}
+
+    		const disjointArrayElements = listOfStocksInRequest.filter(e => !currentStocksInDatabase.includes(e))
+
+    		for (var i = 0; i < disjointArrayElements.length; i++) {
+    			userPreferences.update(
+            { user: userId },
+            {
+              $push: {
+                preferences: {
+                  $each: [ {
+                    stock: disjointArrayElements[i],
+                    profitPercent: 10,
+                    lossPercent: -10
+                  } ]
+                }
+              }
+            }
+          )
+    		}
+    		const responseArray = []
+    		userPreferences.find({ user: userId }).sort({ stock: 1 })
+          .toArray((err, result) => {
+    			
+    			for (let i = 0; i < listOfStocksInRequest.length; i++) {
+    				for (let j = 0; j < result[0].preferences.length; j++) {
+    					if (listOfStocksInRequest[i] == result[0].preferences[j].stock) {
+    						responseArray.push(result[0].preferences[j])
+    					}
+    				}
+    			}
+    			console.log(responseArray)
+    			res.status(200).send({ response: responseArray })
+    		})
+    	} else {
+        res.status(400).send({ error: 'More than one user found with username' })
+      }
+    	// res.status(200).send({ result: 'a' })
     })
   })
 })
@@ -87,6 +120,7 @@ app.get('/test', (req, res) => {
 app.get('/dashboard', (req, res) => {
   if (req.session.user == undefined) {
     res.redirect('/')
+    return
   }
   // console.log(JSON.parse(req.session.user))
   const getUserHoldings = {

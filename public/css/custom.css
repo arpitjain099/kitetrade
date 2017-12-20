@@ -1,0 +1,34 @@
+body    { padding-top:50px; }
+
+   .green {color: green}
+   .red {color: red}
+
+
+#myModal {
+  -webkit-transform: translate3d(0, 0, 0);
+}
+.inputbtn {
+	height: 38px;
+	width: 100%;
+	padding: 6px 10px;
+	background-color: #fff;
+	border: 1px solid #D1D1D1;
+	border-radius: 4px;
+	box-shadow: none;
+	box-sizing: border-box;
+	border: none;
+	border-bottom: 1px solid #ddd;
+	border-radius: 0;
+}
+
+.row {
+	padding: 10px 15px;
+    border-radius: 2px 2px 0 0;
+}
+
+.radiobtn {
+    display: inline-block;
+    margin-right: 20px;
+    cursor: pointer;
+    margin-bottom: 0;
+}

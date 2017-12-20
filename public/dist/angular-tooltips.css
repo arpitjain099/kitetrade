@@ -102,7 +102,7 @@ tooltip {
       font-size: 0.8em; }
   tooltip._top:not(._left):not(._right) tip {
     left: 50%;
-    top: -9px;
+    top: -3px;
     -webkit-transform: translateX(-50%) translateY(-100%);
     transform: translateX(-50%) translateY(-100%); }
     tooltip._top:not(._left):not(._right) tip tip-arrow {

@@ -3,23 +3,21 @@
    src="https://code.jquery.com/jquery-3.1.1.min.js"
    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
    crossorigin="anonymous"></script>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
 <link href="dist/angular-tooltips.css" rel="stylesheet" type="text/css" />
 <script src="dist/angular-tooltips.js"></script>
 <meta charset="UTF-8">
-<title>Super Awesome</title>
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-<style>
-   body    { padding-top:50px; }
-</style>
-<!-- <p><%= holdings %></p> -->
-<style>
-   .green {color: green}
-   .red {color: red}
-</style>
+<title>Kite Trading</title>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="css/custom.css" rel="stylesheet" type="text/css" />
 <!-- <p><%= holdings.body.data %></p> -->
 <body  ng-app="app">
+	<!-- tooltip-template-url="https://www.google.co.jp/?gfe_rd=cr&dcr=0&ei=6o4zWtyyNezd8Ae4qpvQBQ" -->
+	<a href="#" tooltips tooltip-template-url="http://localhost:8080/">Tooltip me</a>
 <table class="ui celled table" id="userholdingstable">
    <thead>
       <tr>
@@ -97,52 +95,167 @@
       </tr>
    </tfoot>
 </table>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="    background-color: #ff5c10;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="userPreferencesActionHeader">Stock</h4>
+        </div>
+        <div class="modal-body" id="userPreferencesActionBody">
+        <div class="row">
+        	<div class="col-md-5" data-toggle="tooltip" data-placement="top" title="Target Profit Percentage: If price of Stock X increases by this percent, sell the stock">Target Profit %: <span id="targetprofitpercent"></span></div>
+        	<div class="col-md-5" data-toggle="tooltip" data-placement="top" title="Thrreshold Loss Percentage: If price of Stock X decreases by this percent, sell the stock">Target Loss %: <span id="targetlosspercent"></span></div>
+        </div>
+        <br/>
+        <hr style="border: solid 1px;margin-bottom: 0;margin-top: 0;">
+          <div class="row">
+    	<div class="col-md-5">
+    		<label for="cnc" data-toggle="tooltip" data-placement="top" title="Cash and Carry">CNC</label>
+    		<input id="cnc" type="radio" name="producttype" ng-model="cnc" value="cnc" class="radiobtn" checked ng-value="cnc">
+    		<label for="mis" data-toggle="tooltip" data-placement="top" title="Intraday Square off">MIS</label>
+    		<input id="mis" type="radio" name="producttype" ng-model="mis" value="mis" class="radiobtn" ng-value="mis">
+    	<!--<a href="#" data-toggle="tooltip" data-placement="top" title="Hooray!">Target Profit Achieved</a>-->
+    	</div>
+    	<div class="col-md-7">
+    		<label for="market" data-toggle="tooltip" data-placement="top" title="Market">MKT</label>
+    		<input id="market" type="radio" name="orderType" ng-model="orderType" ng-value="market" class="radiobtn" checked>
+    		<label for="limit" data-toggle="tooltip" data-placement="top" title="Limit">LMT</label>
+    		<input id="limit" type="radio" name="orderType" ng-model="orderType" ng-value="limit" class="radiobtn">
+
+    		<label for="stoploss" data-toggle="tooltip" data-placement="top" title="Stop Loss">SL</label>
+    		<input id="stoploss" type="radio" name="orderType" ng-model="orderType" ng-value="stoploss" class="radiobtn">
+    		<label for="stoplossmarket" data-toggle="tooltip" data-placement="top" title="Stop Loss Market">SL-M</label>
+    		<input id="stoplossmarket" type="radio" name="orderType" ng-model="orderType" ng-value="stoplossmarket" class="radiobtn">
+    	</div>
+    	</div>
+    	<div class="row">
+    		<div class="col-md-3">
+    			<input type="number" step="1" id="quantity" name="quantity" class="inputbtn" min="1" checklotsize="1" integer="" esc-key="" esc-key-action="close()" required="">
+    		</div>
+    		<div class="col-md-3">
+    			<input type="number" step="0.05" min="0.05" name="price" id="price" class="inputbtn" ng-disabled="orderType=='limit' || orderType=='stoploss'" float="" esc-key="" esc-key-action="close()" required="" disabled="disabled">
+    		</div>
+    		<div class="col-md-3">
+    			<input type="number" step="0.05" min="0.05" name="triggerprice" id="triggerprice" class="inputbtn" ng-disabled="orderType=='stoploss' || orderType=='stoplossmarket'" float="" esc-key="" esc-key-action="close()" required="" disabled="disabled">
+    		</div>
+    		<div class="col-md-3">
+    			<input type="number" step="1" name="disclosedQty" id="disclosedQty" class="inputbtn" float="" esc-key="" esc-key-action="close()" required="">
+    		</div>
+    	</div>
+    	<div class="row">
+    		<div class="col-md-3">
+    			Quantity
+    		</div>
+    		<div class="col-md-3">
+    			Price
+    		</div>
+    		<div class="col-md-3">
+    			Trigger Price
+    		</div>
+    		<div class="col-md-3">
+    			Disclosed Quantity
+    		</div>
+    	</div>
+    	<div class="row">
+    		<div class="col-md-6">
+    			<div class="row">
+	    			<label for="variety" data-toggle="tooltip" data-placement="top" title="Normal Day Order">Regular</label>
+		    		<input id="regularorder" type="radio" name="varietyType" ng-model="varietyType" value="regularorder" class="radiobtn" checked>
+		    		<label for="variety" data-toggle="tooltip" data-placement="top" title="After Market Order">AMO</label>
+		    		<input id="amoorder" type="radio" name="varietyType" ng-model="varietyType" value="amoorder" class="radiobtn">
+		    	</div>
+	    		<div class="row">
+	    			<label for="validity" data-toggle="tooltip" data-placement="top" title="Full Day Validity">DAY</label>
+		    		<input id="dayvalidity" type="radio" name="validityType" ng-model="validityType" value="dayvalidity" class="radiobtn" checked>
+		    		<label for="validity" data-toggle="tooltip" data-placement="top" title="Immediate or Cancel">IOC</label>
+		    		<input id="iocvalidity" type="radio" name="validityType" ng-model="validityType" value="iocvalidity" class="radiobtn">
+		    	</div>
+    		</div>
+    		<div class="col-md-6">
+    			<button type="button" class="btn btn-default" style="width: 48%; background-color: #ff5c10;">Sell</button>
+    			<button type="button" class="btn btn-default" data-dismiss="modal" style="width: 48%">Close</button>
+    		</div>
+    	</div>
+    	</div>
+        </div>
+      </div>      
+    </div>
+  </div>
 </body>
 <script>
-angular.module('app', [
-  '720kb.tooltips'
- ]);
-console.log("after angular")
+function showSetPreferencesModal(rowIndex, profitPercent, lossPercent) {
+    console.log(rowIndex)
+    console.log(profitPercent)
+    console.log(bodyUserHoldingData)
+    document.getElementById("userPreferencesActionHeader").innerHTML = bodyUserHoldingData[rowIndex].tradingsymbol
+    document.getElementById("targetprofitpercent").innerHTML = profitPercent + "%"
+    document.getElementById("targetlosspercent").innerHTML = lossPercent +"%"
+    
+    //document.getElementById("userPreferencesActionBody").innerHTML = ``
+    $('#myModal').modal('show');
+}
+
+function calculatePnL(stock) {
+    return Math.floor(stock.pnl * 10000 / (stock.average_price * (stock.quantity + stock.t1_quantity))) / 100
+}
+const bodyUserHoldingData = []
 
 $(document).ready(() => {
-  console.log('jquery')
-  var userHoldingData = (<%- JSON.stringify(holdings) %>);
-  console.log(userHoldingData)
-  // console.log(JSON.stringify(userHoldingData))
-  const listofstocks = []
-  const bodyUserHoldingData = []
-  for (let i = 0; i < userHoldingData.body.data.length; i++) {
-    if (userHoldingData.body.data[i].quantity > 0) {
-      listofstocks.push(userHoldingData.body.data[i].tradingsymbol)
-      bodyUserHoldingData.push(userHoldingData.body.data[i])
-    }
-  }
+    console.log('jquery')
+    $('[data-toggle="tooltip"]').tooltip();   
 
-  $.post('http://localhost:8080/fetchlimits', { listofstocks })
-    .done(backEndResponse => {
-      console.log('response recvd from backend')
-      // console.log(response)
-      const response = backEndResponse.response
-      for (let rowIndex = 0; rowIndex < response.length; rowIndex++) {
-      	const stock = bodyUserHoldingData[rowIndex]
-      	const cellElement = document.getElementById('userholdingstable').rows[rowIndex + 1].cells[6]
-      	const pnlPercent = Math.floor(stock.pnl * 10000 / (stock.average_price * (stock.quantity + stock.t1_quantity))) / 100
-        const individualResponseElem = response[rowIndex]
-        // console.log(response[rowIndex])
-        // console.log(individualResponseElem.profitPercent)
-        if (pnlPercent > individualResponseElem.profitPercent) {
-        	cellElement.classList.add('positive')
-        } else if (pnlPercent < individualResponseElem.lossPercent) {
-        	cellElement.classList.add('negative')
+    var userHoldingData = (<%- JSON.stringify(holdings) %>);
+    console.log(userHoldingData)
+    // console.log(JSON.stringify(userHoldingData))
+    const listofstocks = []
+    for (let i = 0; i < userHoldingData.body.data.length; i++) {
+        if (userHoldingData.body.data[i].quantity > 0) {
+            listofstocks.push(userHoldingData.body.data[i].tradingsymbol)
+            bodyUserHoldingData.push(userHoldingData.body.data[i])
         }
-        cellElement.innerHTML = JSON.stringify(response[rowIndex])
-      }
-    })
-    .fail(() => {
-      alert('error')
-    })
+    }
+
+    $.post('http://localhost:8080/fetchlimits', {
+            listofstocks
+        })
+        .done(backEndResponse => {
+            console.log('response recvd from backend')
+            // console.log(response)
+            const response = backEndResponse.response
+            for (let rowIndex = 0; rowIndex < response.length; rowIndex++) {
+                const stock = bodyUserHoldingData[rowIndex]
+                const cellElement = document.getElementById('userholdingstable').rows[rowIndex + 1].cells[6]
+                const pnlPercent = calculatePnL(stock)
+                const individualResponseElem = response[rowIndex]
+                // console.log(response[rowIndex])
+                // console.log(individualResponseElem.profitPercent)
+                if (pnlPercent > individualResponseElem.profitPercent) {
+                    cellElement.classList.add('positive')
+                    cellElement.innerHTML = "<a href='#' tooltips tooltip-template-url='http://localhost:8080/'>Target Profit Achieved</a>"
+
+                } else if (pnlPercent < individualResponseElem.lossPercent) {
+                    cellElement.classList.add('negative')
+                    cellElement.innerHTML = '<div data-toggle="modal" onclick="return showSetPreferencesModal(' + rowIndex + ',' + individualResponseElem.profitPercent + ',' + individualResponseElem.lossPercent + ')">Action Required</div>'
+                    //"<div class='mybutton' onclick='return showSetPreferencesModal("+rowIndex+")'>Loss Threshold Reached</div>"
+                    //cellElement.innerHTML = JSON.stringify(response[rowIndex])
+                } else {
+                    cellElement.innerHTML = JSON.stringify(response[rowIndex])
+                }
+            }
+        })
+        .fail(() => {
+            alert('error')
+        })
+
+
 })
 
-</script>
+angular.module('app', [
+    '720kb.tooltips'
+]);
+console.log("after angular")
 
-<a href="#" tooltips tooltip-template-url="http://google.com">Tooltip me</a>
+</script>

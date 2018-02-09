@@ -1,0 +1,53 @@
+* About to connect() to proxy proxy.jp.sbibits.com port 8080 (#0)
+*   Trying 10.136.0.60...
+* Connected to proxy.jp.sbibits.com (10.136.0.60) port 8080 (#0)
+* Establish HTTP proxy tunnel to finance.google.com:443
+> CONNECT finance.google.com:443 HTTP/1.1
+> Host: finance.google.com:443
+> User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)
+> Proxy-Connection: Keep-Alive
+> Accept: */*
+> Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+> Accept-Language: en-US,en;q=0.8
+> 
+< HTTP/1.1 200 Connection established
+< 
+* Proxy replied OK to CONNECT request
+* Initializing NSS with certpath: sql:/etc/pki/nssdb
+*   CAfile: /etc/pki/tls/certs/ca-bundle.crt
+  CApath: none
+* SSL connection using TLS_RSA_WITH_AES_256_GCM_SHA384
+* Server certificate:
+* 	subject: CN=*.google.com,O=Google Inc,L=Mountain View,ST=California,C=US
+* 	start date: Jan 23 13:36:00 2018 GMT
+* 	expire date: Apr 17 13:36:00 2018 GMT
+* 	common name: *.google.com
+* 	issuer: CN=squid@m5-proxy02.jp.sbibits.com,O=SBI BITS,C=JP
+> GET /finance?q=8306&ei=dD59WrmoJMWh0ASjt7noDw HTTP/1.1
+> User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)
+> Host: finance.google.com
+> Accept: */*
+> Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+> Accept-Language: en-US,en;q=0.8
+> 
+< HTTP/1.1 200 OK
+< Content-Type: text/html; charset=utf-8
+< P3P: CP="This is not a P3P policy! See g.co/p3phelp for more info."
+< Date: Fri, 09 Feb 2018 07:25:18 GMT
+< Expires: Fri, 09 Feb 2018 07:25:18 GMT
+< Cache-Control: private, max-age=0
+< X-Content-Type-Options: nosniff
+< X-Frame-Options: SAMEORIGIN
+< X-XSS-Protection: 1; mode=block
+< Server: GSE
+< Set-Cookie: NID=123=mC9X1UxFg8lXUurFL4jSx2MdbHGyf95TUbUj9krYuputgsadVSTuLd58qZSCxtu56kHwTNx0qz0t8JSpMQTk7anxXDBGqQqbuuWq6Xu_7IrHCg_HJRovbou2d86aPSkV;Domain=.google.com;Path=/;Expires=Sat, 11-Aug-2018 07:25:18 GMT;HttpOnly
+< Alt-Svc: hq=":443"; ma=2592000; quic=51303431; quic=51303339; quic=51303338; quic=51303337; quic=51303335,quic=":443"; ma=2592000; v="41,39,38,37,35"
+< Accept-Ranges: none
+< Vary: Accept-Encoding
+< X-Cache: MISS from m5-proxy02.jp.sbibits.com
+< X-Cache-Lookup: MISS from m5-proxy02.jp.sbibits.com:8080
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+< 
+{ [data not shown]
+* Connection #0 to host proxy.jp.sbibits.com left intact
